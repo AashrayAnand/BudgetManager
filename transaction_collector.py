@@ -16,15 +16,11 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
 
-from selenium.webdriver import FirefoxOptions
+# create firefox webdriver and WebDriverWait
+browser = webdriver.Firefox()
+wait = WebDriverWait(browser,10)
 
-#opts = FirefoxOptions()
-#opts.add_argument("--headless")
-
-# create firefox browser drivers
-browser = webdriver.Firefox()#options=opts)
 date_today = date.today()
 date_one_month_ago = date_today - timedelta(days=30)
 date_today_str = str(date_today.month) + '/' + str(date_today.day) + '/' + str(date_today.year)
@@ -57,12 +53,11 @@ def login(user_argument, password_argument):
     if not found(browser, login_page_button, "button to reach login"):
         return
     login_page_button.click()
-    time.sleep(3)
 
     # select elements of login form, fill them out and submit form,
     # user provided arguments used to authenticate
-    username = browser.find_element_by_id(user_id)
-    password = browser.find_element_by_id(password_id)
+    username = wait.until(EC.element_to_be_clickable((By.ID, user_id)))
+    password =  wait.until(EC.element_to_be_clickable((By.ID, password_id)))
     if not found(browser, username, "username"):
         return
     if not found(browser, password, "password"):
@@ -78,41 +73,41 @@ def login(user_argument, password_argument):
     filter_transactions()
 
 def filter_transactions():
-    time.sleep(8)
-    checking_account = browser.find_element_by_xpath(checking_account_selector)
+    checking_account =  wait.until(
+        EC.element_to_be_clickable((By.XPATH, checking_account_selector)))
     if not found(browser, checking_account, "button to view checking account"):
         return
     checking_account.click()
-    time.sleep(8)
-    filter_toggle = browser.find_element_by_xpath(filter_toggle_selector)
+    filter_toggle =  wait.until(
+        EC.element_to_be_clickable((By.XPATH, filter_toggle_selector)))
     if not found(browser, filter_toggle, "button to filter transactions"):
         return
     filter_toggle.click()
-    time.sleep(8)
 
-    date_input = browser.find_element_by_id(date_input_selector)
+    date_input = wait.until(
+        EC.element_to_be_clickable((By.ID, date_input_selector)))
     if not found(browser, date_input, "form field to filter by date"):
         return
     date_input.send_keys(date_one_month_ago_str + '-' + date_today_str)
-    time.sleep(8)
 
-    submit_search_button = browser.find_element_by_id(submit_search_button_selector)
+    submit_search_button = wait.until(
+        EC.element_to_be_clickable((By.ID, submit_search_button_selector)))
     if not found(browser, submit_search_button, "button to search with filter"):
         return
     submit_search_button.click()
-    time.sleep(8)
 
     # load all of the transactions by clicking button over and over
     save_transaction_data()
 
 def save_transaction_data():
-    load_more_transactions_button = browser.find_element_by_id(load_more_transactions_id)
+    load_more_transactions_button = wait.until(
+        EC.element_to_be_clickable((By.ID, load_more_transactions_id)))
     if not found(browser, load_more_transactions_button, "button to load more transactions"):
         return
     # repeatadly load transactions until all are displayed
     while load_more_transactions_button.is_displayed():
         load_more_transactions_button.click()
-        time.sleep(5)
+        time.sleep(3)
         load_more_transactions_button = browser.find_element_by_id(load_more_transactions_id)
         if not found(browser, load_more_transactions_button, "button to load more transactions"):
             return

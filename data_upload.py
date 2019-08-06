@@ -17,3 +17,17 @@ def upload_file():
     print("file content set")
     data.Upload()
     print("file uploaded, goodbye")
+
+    data = drive.CreateFile(metadata={"title": date_today_str + "common_merchants.png"})
+    print("file created")
+    data.SetContentFile('./common_merchants.png')
+    print("file content set")
+    data.Upload()
+    print("file uploaded, goodbye")
+
+    data = drive.CreateFile(metadata={"title": date_today_str + "per_day.png"})
+    print("file created")
+    data.SetContentFile('./out.csv')
+    print("file content set")
+    data.Upload()
+    print("file uploaded, goodbye")
